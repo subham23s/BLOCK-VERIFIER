@@ -1,3 +1,6 @@
-/blockchain_data.json
-/venv
-/__pycache__
+blockchain_data.json
+venv/
+__pycache__/
+*.pyc
+iris_model.joblib
+.vscode/
