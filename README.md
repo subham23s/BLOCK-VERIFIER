@@ -6,7 +6,7 @@ This project demonstrates how blockchain technology can be used to ensure the in
 
 A Logistic Regression model is trained using the Iris dataset.  
 The trained model is serialized and saved to disk.  
-A SHA-256 cryptographic hash of the model file is generated.  +
+A SHA-256 cryptographic hash of the model file is generated.  +`
 This hash is stored inside a custom-built blockchain structure.
 
 Any modification to the model file or blockchain data is detected through hash validation.
