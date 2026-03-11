@@ -1,225 +1,153 @@
-# Blockchain-Based Machine Learning Model Integrity Verification (Iris Dataset)
+# BlockVerify — Blockchain-Based File Integrity Verification
 
-## 📌 Project Overview
+## 📌 Overview
 
-This project demonstrates how blockchain technology can be used to ensure the integrity of a trained Machine Learning model.
-
-A Logistic Regression model is trained using the Iris dataset.  
-The trained model is serialized and saved to disk.  
-A SHA-256 cryptographic hash of the model file is generated.  +`
-This hash is stored inside a custom-built blockchain structure.
-
-Any modification to the model file or blockchain data is detected through hash validation.
+BlockVerify uses **SHA-256 hashing**, **Proof-of-Work mining**, and **IPFS (via Pinata)** to verify the integrity of any file — images, documents, or ML models. Any modification to a registered file is instantly detected.
 
 ---
 
-## 🎯 Objective
+## 🆕 What's New (v2)
 
-The goal of this project is to:
-
-- Train a Machine Learning model
-- Serialize the trained model
-- Generate a SHA-256 hash of the model file
-- Store the hash in a blockchain structure
-- Detect tampering of:
-  - The ML model file
-  - The blockchain data itself
-
-This project combines Machine Learning + Cryptography + Blockchain concepts.
+| Feature | v1 | v2 |
+|---|---|---|
+| File support | Only iris_model.joblib | Any image, document, ML model |
+| Blockchain storage | Local JSON | Pinata IPFS (decentralized) |
+| Mining | ❌ | ✅ Proof-of-Work |
+| Interface | Script only | Flask Web UI + CLI |
+| Multi-file | ❌ | ✅ Each file = its own block |
 
 ---
 
-## 🧠 Technologies Used
+## 🏗 Architecture
 
-- Python
-- Scikit-learn
-- Joblib
-- SHA-256 (hashlib)
-- Custom Blockchain Implementation (Python)
-
----
-
-## 📊 Dataset Used
-
-Iris Dataset (from sklearn)
-
-- 150 samples
-- 4 numerical features
-- 3 classes (Setosa, Versicolor, Virginica)
-- Multi-class classification
-
-The dataset is built-in within `scikit-learn` and requires no external download.
+```
+File Upload
+    ↓
+SHA-256 Hash
+    ↓
+Proof-of-Work Mining (find nonce where hash starts with 0000)
+    ↓
+New Block added to chain
+    ↓
+Blockchain JSON pinned to IPFS via Pinata
+    ↓
+CID saved locally for future fetches
+```
 
 ---
 
-## 🏗 Project Architecture
+## 🚀 Setup
 
-System Workflow:
+### 1. Install dependencies
+```bash
+pip install -r requirements.txt
+```
 
-1. Train ML Model
-2. Save model as `iris_model.joblib`
-3. Generate SHA-256 hash of model file
-4. Store hash inside blockchain block
-5. Save blockchain to JSON file
-6. Verify integrity on subsequent runs
+### 2. Get Pinata API Keys
+1. Go to [pinata.cloud](https://pinata.cloud) → Sign up (free)
+2. API Keys → Create new key → enable `pinFiles` and `pinJSON`
+3. Copy **API Key** and **Secret Key**
 
----
+### 3. Set environment variables
+```bash
+# Linux/Mac
+export PINATA_API_KEY="your_api_key_here"
+export PINATA_SECRET_KEY="your_secret_key_here"
 
-## 🔐 Blockchain Structure
-
-Each block contains:
-
-- index
-- timestamp
-- model_hash
-- previous_hash
-- current_hash
-
-The current_hash is generated using:
-
-SHA-256(index + timestamp + model_hash + previous_hash)
-
-Each block links to the previous block using `previous_hash`, ensuring immutability.
+# Windows
+set PINATA_API_KEY=your_api_key_here
+set PINATA_SECRET_KEY=your_secret_key_here
+```
 
 ---
 
-## 🔒 Why SHA-256?
+## 🌐 Web UI
 
-SHA-256 is a cryptographic hash function that:
+```bash
+python app.py
+```
+Open: http://localhost:5000
 
-- Produces fixed 256-bit output
-- Is one-way (cannot reverse to original data)
-- Exhibits avalanche effect (small change → completely different hash)
-- Is widely used in blockchain systems (e.g., Bitcoin)
+### Features:
+- **Register tab** — Upload any file, mines a block and stores on IPFS
+- **Verify tab** — Upload a file to check if it matches the blockchain
+- **Chain Explorer** — Browse all blocks with nonce, hash, timestamps
+- **Config tab** — Enter Pinata keys directly in the UI
+
+---
+
+## 💻 CLI
+
+```bash
+# Register a file
+python cli.py register iris_model.joblib
+python cli.py register photo.jpg
+python cli.py register report.pdf
+
+# Verify a file
+python cli.py verify photo.jpg
+
+# View entire chain
+python cli.py chain
+
+# Check Pinata connection
+python cli.py status
+```
+
+---
+
+## 🔐 Proof-of-Work
+
+Each block is mined by finding a `nonce` such that:
+
+```
+SHA-256(index + timestamp + file_hash + previous_hash + nonce)
+```
+
+starts with `0000` (difficulty = 4 zeros by default).
+
+This makes it computationally expensive to tamper with the chain.
 
 ---
 
 ## 📂 Project Structure
 
+```
 blockchain_iris_project/
 │
-├── train_model.py # Trains and saves ML model
-├── hash_utils.py # Generates SHA-256 file hash
-├── blockchain.py # Block and Blockchain classes
-├── main.py # Integrity verification logic
-├── iris_model.joblib # Serialized ML model
-├── blockchain_data.json # Stored blockchain data
+├── app.py              # Flask web application
+├── cli.py              # Command-line interface
+├── blockchain.py       # Block + Blockchain + PoW
+├── hash_utils.py       # SHA-256 for files/bytes
+├── pinata_utils.py     # Pinata IPFS integration
+├── train_model.py      # Train iris ML model
+├── requirements.txt
 └── README.md
-
----
-
-## 🚀 How to Run
-
-### Step 1 — Train Model
-
-python train_model.py
-
-This will:
-
-- Train Logistic Regression model
-- Save it as `iris_model.joblib`
-
----
-
-### Step 2 — Initialize Blockchain
-
-(Delete `blockchain_data.json` if it exists)
-
-python main.py
-
-This will:
-
-- Generate model hash
-- Store it in blockchain
-- Save blockchain to JSON file
-
----
-
-### Step 3 — Verify Integrity
-
-Run again:
-
-python main.py
-
-If model not modified:
-
-Model Integrity Verified ✅  
-Is Blockchain Valid? True
-
----
-
-### Step 4 — Tampering Test
-
-Modify `iris_model.joblib` manually.
-
-Run:
-
-python main.py
-
-Output:
-
-Model Tampered ❌  
-Is Blockchain Valid? True
-
----
-
-### Step 5 — Blockchain Tampering Test
-
-Modify `blockchain_data.json`.
-
-Run:
-
-python main.py
-
-Output:
-
-Is Blockchain Valid? False
-
----
-
-## 🧩 Key Concepts Demonstrated
-
-✔ Model Serialization  
-✔ Cryptographic Hashing  
-✔ Avalanche Effect  
-✔ Blockchain Linking  
-✔ Immutability  
-✔ Tamper Detection  
+```
 
 ---
 
 ## ⚠ Limitations
 
-- Not a distributed blockchain
+- Not a distributed blockchain (single node)
 - No consensus mechanism
-- No mining / Proof-of-Work
-- Educational simulation only
+- Pinata free tier has storage limits
+- Educational/demo use only
 
 ---
 
 ## 📈 Future Improvements
 
-- Add digital signatures
-- Implement Proof-of-Work
-- Deploy as API using Flask
-- Use IPFS for decentralized storage
-- Extend to larger ML models
-
----
-
-## 🎓 Academic Relevance
-
-This project demonstrates how blockchain can be used to ensure integrity of deployed Machine Learning models.
-
-It connects:
-
-Blockchain → Cryptographic Hashing → Model Integrity → Trustworthy AI
+- Digital signatures per file
+- Email alerts on tamper detection
+- Multi-user access with auth
+- IPFS file storage (not just JSON)
 
 ---
 
 ## 👨‍💻 Author
 
-SUBHAM MISHRA  
-Regd no: 240301370048
+**SUBHAM MISHRA**  
+Regd No: 240301370048  
 B.Tech CSE (AI/ML Specialization)  
-Blockchain Intro Course Project
+Blockchain Intro Course Project — v2
