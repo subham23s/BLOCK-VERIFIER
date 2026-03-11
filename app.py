@@ -1,3 +1,4 @@
+import webbrowser
 from flask import Flask, request, jsonify, render_template_string
 from blockchain import Blockchain
 from hash_utils import generate_bytes_hash, detect_file_type
@@ -783,4 +784,5 @@ def config():
 
 
 if __name__ == "__main__":
+    webbrowser.open("http://127.0.0.1:5000")
     app.run(debug=True, port=5000)
