@@ -52,8 +52,8 @@ blockchain_iris_project/
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/subham23s/energy-consumption-prediction
-cd blockchain_iris_project
+git clone https://github.com/subham23s/BLOCK-VERIFIER
+cd BLOCK-VERIFIER
 ```
 
 ### 2. Create virtual environment
