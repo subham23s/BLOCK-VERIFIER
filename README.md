@@ -1,10 +1,10 @@
 # BlockVerify 🔗
 
-> **Blockchain-based File Integrity Verification System**  
-> SHA-256 · Proof-of-Work · IPFS via Pinata · Multi-user Authentication
+> **Blockchain-based File Integrity Verification System**
+> SHA-256 · Proof-of-Work · IPFS via Pinata · Multi-user Authentication · MetaMask Wallet Login
 
-Built by Subham Mishra 
-
+Built by [Subham Mishra](https://github.com/subham23s) 
+B.Tech CSE (AI/ML) — Centurion University of Technology and Management
 
 ---
 
@@ -17,6 +17,7 @@ BlockVerify lets you register any file (image, document, ML model) into a blockc
 ## Features
 
 - 🔐 **Multi-user login & signup** — anyone can create an account
+- 🦊 **MetaMask wallet login** — Sign-In with Ethereum on Sepolia Testnet
 - 👤 **Per-user file registry** — each user sees only their own files
 - ⛏ **Proof-of-Work mining** — difficulty 4 (hash must start with `0000`)
 - 🔒 **SHA-256 hashing** — content-based, not filename-based
@@ -33,16 +34,26 @@ BlockVerify lets you register any file (image, document, ML model) into a blockc
 ```
 blockchain_iris_project/
 │
-├── app.py               ← Main Flask web app
-├── blockchain.py        ← Block + Blockchain classes with PoW
-├── hash_utils.py        ← SHA-256 hashing + file type detection
-├── pinata_utils.py      ← Pinata IPFS integration
-├── train_model.py       ← Iris model trainer (original project)
-├── iris_model.joblib    ← Trained ML model
-├── requirements.txt     ← Python dependencies
-├── .env                 ← API keys (never commit this)
-├── users.json           ← Auto-created on first signup (local user store)
-├── uploaded_files/      ← Auto-created file storage for downloads
+├── app.py                  ← Flask routes only
+├── blockchain.py           ← Block + Blockchain classes with PoW
+├── hash_utils.py           ← SHA-256 hashing + file type detection
+├── pinata_utils.py         ← Pinata IPFS integration
+├── train_model.py          ← Iris model trainer
+├── iris_model.joblib       ← Trained ML model
+├── requirements.txt        ← Python dependencies
+├── .env                    ← API keys (never commit this)
+├── templates/
+│   ├── index.html          ← Main app HTML
+│   └── admin.html          ← Admin panel HTML
+├── static/
+│   ├── css/
+│   │   ├── main.css        ← Main app styles
+│   │   └── admin.css       ← Admin styles
+│   └── js/
+│       ├── main.js         ← Main app JavaScript
+│       └── admin.js        ← Admin JavaScript
+├── users.json              ← Auto-created on first signup
+├── uploaded_files/         ← Auto-created file storage
 └── README.md
 ```
 
@@ -52,8 +63,8 @@ blockchain_iris_project/
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/subham23s/BLOCK-VERIFIER
-cd BLOCK-VERIFIER
+git clone https://github.com/subham23s/Blockchain-Based-Machine-Learning-Model-Integrity-Verification-System.git
+cd blockchain_iris_project
 ```
 
 ### 2. Create virtual environment
@@ -76,11 +87,11 @@ pip install -r requirements.txt
 
 ### 5. Create `.env` file
 
-Create a file called `.env` in your project folder:
-
 ```
 PINATA_API_KEY=your_pinata_api_key_here
 PINATA_SECRET_KEY=your_pinata_secret_key_here
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD=your_admin_password
 ```
 
 ### 6. Run the app
@@ -96,28 +107,27 @@ Browser opens automatically at `http://127.0.0.1:5000`
 
 ### Regular Users
 1. Open `http://127.0.0.1:5000`
-2. **Sign Up** with any username and password
+2. **Sign Up** with username and password — or connect MetaMask wallet
 3. **Register** tab — drop any file to register it on the blockchain
 4. **Verify** tab — drop a file to check if it has been tampered with
 5. **My Files** tab — view, download, or delete your registered files
 6. **Chain** tab — explore all blocks in the blockchain
 
-### Admin
-Login from the main page with admin credentials — automatically redirects to the admin panel.
+### MetaMask Wallet Login
+1. Click **Connect MetaMask Wallet** on the login page
+2. MetaMask auto-switches to Sepolia Testnet
+3. Sign the challenge message (no ETH spent)
+4. First time — choose a display name
+5. Returning — logs in instantly
 
-**Default admin credentials:**
-```
-Username : admin@username
-Password : admin@password
-```
+### Admin
+Login from the main page with admin credentials set in `.env` — automatically redirects to the admin panel at `/admin`.
 
 **Admin can:**
-- View all registered users 
+- View all registered users and their files
 - Delete user accounts
-- Set Pinata API keys
+- Update Pinata API keys
 - Change admin password
-
-> Change the admin password after first login via Admin Panel → Config tab.
 
 ---
 
@@ -134,14 +144,14 @@ Block added to Blockchain
     ↓
 Chain saved to IPFS via Pinata (get CID)
     ↓
-File stored locally in uploaded_files/<hash>/
+File stored in uploaded_files/<hash>/
     ↓
-User's file list updated in users.json (local JSON store)
+User's file list updated in users.json
 ```
 
 ### Verification
 ```
-Upload file again
+Upload file
     ↓
 Compute SHA-256 hash
     ↓
@@ -155,10 +165,7 @@ Search blockchain for matching hash
 
 ## User Data Storage
 
-User accounts (username, hashed password, file list) are stored locally in `users.json`.  
-This is ideal for **college demos and small deployments**.
-
-> For large-scale public deployment with many users, this can be migrated to a cloud database like Firebase Firestore in the future.
+User accounts (username, hashed password, file list) are stored locally in `users.json`. This is ideal for college demos and small deployments. For large-scale public deployment, this can be migrated to Firebase Firestore.
 
 ---
 
@@ -170,10 +177,9 @@ This is ideal for **college demos and small deployments**.
 | Blockchain | Custom implementation (SHA-256 + PoW) |
 | Storage | IPFS via Pinata |
 | Frontend | HTML, CSS, Vanilla JS |
-| Auth | Flask Sessions + SHA-256 password hashing |
-| User Store | Local JSON file (`users.json`) |
+| Auth | Flask Sessions + SHA-256 + MetaMask SIWE |
+| User Store | Local JSON file |
 | ML Model | Scikit-learn (Iris dataset) |
-
 
 ---
 
@@ -184,6 +190,9 @@ This is ideal for **college demos and small deployments**.
 | POST | `/signup` | Create new account |
 | POST | `/login` | Login (redirects admin to /admin) |
 | POST | `/logout` | Logout and clear session |
+| POST | `/wallet/challenge` | Get challenge for MetaMask signing |
+| POST | `/wallet/verify` | Verify wallet signature |
+| POST | `/wallet/register` | Register new wallet user |
 | POST | `/register` | Register a file on blockchain |
 | POST | `/verify` | Verify file integrity |
 | GET | `/my_files` | Get logged-in user's files |
@@ -200,16 +209,18 @@ This is ideal for **college demos and small deployments**.
 ## .gitignore
 
 ```
-.env
 venv/
-__pycache__/
-*.joblib
+.env
 users.json
 uploaded_files/
+firebase_key.json
+__pycache__/
+*.joblib
+latest_cid.txt
 ```
 
 ---
 
 ## License
 
-MIT License — © 2026 Subham Mishra 
+MIT License — © 2025 Subham Mishra
