@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>BlockVerify — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/css/admin.css"/>
+</head>
+<body>
+
+<!-- ADMIN AUTH -->
+<div class="auth-page" id="adminAuthPage">
+  <div class="auth-card">
+    <div class="auth-logo">Block<span>Verify</span></div>
+    <div class="auth-badge">🛡 ADMIN PANEL</div>
+    <div class="form-group"><label class="form-label">ADMIN PASSWORD</label><input class="form-input" type="password" id="adminPassInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')submitAdminLogin()"/></div>
+    <button class="btn btn-admin" onclick="submitAdminLogin()">Access Admin Panel →</button>
+    <div class="auth-msg err" id="adminLoginMsg"></div>
+    <p style="font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:20px;text-align:center"><a href="/" style="color:var(--accent)">← Back to main app</a></p>
+  </div>
+</div>
+
+<!-- ADMIN SHELL -->
+<div class="admin-shell" id="adminShell">
+  <div class="container">
+    <header>
+      <div class="header-inner">
+        <div class="logo">Block<span>Verify</span> <span style="font-size:.75rem;color:var(--muted);font-weight:400">/ Admin</span></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="admin-pill">🛡 ADMIN</div>
+          <div class="status-pill fail" id="adminPinataStatus"><span class="dot"></span><span id="adminPinataText">Checking...</span></div>
+          <button class="logout-btn" onclick="adminLogout()">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="tabs" style="margin-top:28px">
+      <button class="tab active" onclick="switchAdminTab('dashboard')">📊 Dashboard</button>
+      <button class="tab" onclick="switchAdminTab('users')">👥 Users</button>
+      <button class="tab" onclick="switchAdminTab('config')">⚙ Config</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="apanel-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="aStat-users">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Files</div><div class="stat-value" id="aStat-files">—</div></div>
+        <div class="stat-card"><div class="stat-label">Chain Blocks</div><div class="stat-value" id="aStat-blocks">—</div></div>
+        <div class="stat-card"><div class="stat-label">Chain Valid</div><div class="stat-value" id="aStat-valid" style="font-size:1.4rem">—</div></div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;font-family:var(--mono);font-size:.76rem;">
+        <div style="color:var(--accent);font-weight:700;margin-bottom:10px;">IPFS / PINATA</div>
+        <div style="color:var(--muted)">Latest CID: <span style="color:var(--text)" id="aStat-cid">—</span></div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="panel" id="apanel-users">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:1.2rem;font-weight:800;">👥 All Users & Files</h2>
+        <button class="btn-outline" onclick="loadAdminUsers()">↺ Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table id="usersTable">
+          <thead><tr><th>Username</th><th>Files</th><th>Joined</th><th>Last Login</th><th>Logins</th><th>Action</th></tr></thead>
+          <tbody id="usersBody"><tr><td colspan="6" style="color:var(--muted);text-align:center;padding:30px">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="panel" id="apanel-config">
+      <div class="config-form">
+        <div class="config-section-title">🔌 Pinata IPFS Keys</div>
+        <div class="form-group"><label class="form-label">API KEY</label><input class="form-input" type="text" id="aCfgApiKey" placeholder="Pinata API key"/></div>
+        <div class="form-group"><label class="form-label">SECRET KEY</label><input class="form-input" type="password" id="aCfgSecretKey" placeholder="Pinata Secret key"/></div>
+        <div class="form-group"><label class="form-label">POW DIFFICULTY (1–6)</label><input class="form-input" type="number" id="aCfgDifficulty" value="4" min="1" max="6"/></div>
+        <button class="btn-green" onclick="saveAdminConfig()">Save & Test Connection</button>
+        <div class="result-msg" id="aCfgResult"></div>
+
+        <hr class="divider"/>
+        <div class="config-section-title">🔑 Change Admin Password</div>
+        <div class="form-group"><label class="form-label">CURRENT PASSWORD</label><input class="form-input" type="password" id="aOldPass" placeholder="Current admin password"/></div>
+        <div class="form-group"><label class="form-label">NEW PASSWORD</label><input class="form-input" type="password" id="aNewPass" placeholder="New admin password"/></div>
+        <button class="btn-green" onclick="changeAdminPass()">Update Admin Password</button>
+        <div class="result-msg" id="aPassResult"></div>
+      </div>
+    </div>
+  </div>
+  <footer>BlockVerify Admin Panel • Built by <a href="https://github.com/subham23s" target="_blank" style="color:var(--accent)">Subham Mishra</a> &amp; <a href="https://github.com/Anubhav-axt" target="_blank" style="color:var(--accent)">Anubhav Pati</a></footer>
+</div>
+
+<script src="/static/js/admin.js"></script>
+</body>
+</html>'

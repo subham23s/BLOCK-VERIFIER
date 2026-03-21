@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>BlockVerify</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/css/main.css"/>
+</head>
+<body>
+
+<!-- AUTH PAGE -->
+<div class="auth-page" id="authPage">
+  <div class="auth-card">
+    <div class="auth-logo">Block<span>Verify</span></div>
+    <div class="auth-tagline">SHA-256 · Proof-of-Work · IPFS</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+    <div class="welcome-banner" id="welcomeBanner"></div>
+
+    <!-- Login -->
+    <div id="loginForm">
+      <div class="form-group"><label class="form-label">USERNAME</label><input class="form-input" type="text" id="authLoginUser" placeholder="Enter username" onkeydown="if(event.key==='Enter')submitLogin()"/></div>
+      <div class="form-group"><label class="form-label">PASSWORD</label><input class="form-input" type="password" id="authLoginPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')submitLogin()"/></div>
+      <button class="btn btn-primary" onclick="submitLogin()">Login →</button>
+      <div class="auth-msg" id="loginMsg"></div>
+      <div class="wallet-divider"><span>OR</span></div>
+      <button class="btn btn-wallet" onclick="connectWallet()">🦊 Connect MetaMask Wallet</button>
+      <div class="auth-msg" id="walletMsg"></div>
+    </div>
+
+    <!-- Signup -->
+    <div id="signupForm" style="display:none">
+      <div class="form-group"><label class="form-label">USERNAME</label><input class="form-input" type="text" id="authSignupUser" placeholder="Choose a username" onkeydown="if(event.key==='Enter')submitSignup()"/></div>
+      <div class="form-group"><label class="form-label">PASSWORD</label><input class="form-input" type="password" id="authSignupPass" placeholder="Choose a password" onkeydown="if(event.key==='Enter')submitSignup()"/></div>
+      <div class="form-group"><label class="form-label">CONFIRM PASSWORD</label><input class="form-input" type="password" id="authSignupPassConfirm" placeholder="Repeat password" onkeydown="if(event.key==='Enter')submitSignup()"/></div>
+      <button class="btn btn-primary" onclick="submitSignup()">Create Account →</button>
+      <div class="auth-msg" id="signupMsg"></div>
+      <div class="wallet-divider"><span>OR</span></div>
+      <button class="btn btn-wallet" onclick="connectWallet()">🦊 Connect MetaMask Wallet</button>
+      <div class="auth-msg" id="walletMsg2"></div>
+    </div>
+
+    <!-- Wallet username setup -->
+    <div id="walletSetupForm" style="display:none">
+      <div style="font-family:var(--mono);font-size:.72rem;color:var(--accent);margin-bottom:16px;word-break:break-all" id="connectedAddress"></div>
+      <div class="form-group"><label class="form-label">CHOOSE A DISPLAY NAME</label><input class="form-input" type="text" id="walletDisplayName" placeholder="e.g. subham23s" onkeydown="if(event.key==='Enter')submitWalletUsername()"/></div>
+      <button class="btn btn-wallet" onclick="submitWalletUsername()">Complete Setup →</button>
+      <div class="auth-msg" id="walletSetupMsg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div class="app-shell" id="appShell">
+  <div class="container">
+    <header>
+      <div class="header-inner">
+        <div class="logo">Block<span>Verify</span></div>
+        <div class="header-right">
+          <div class="user-pill">👤 <span id="loggedInUsername"></span></div>
+          <div class="status-pill fail" id="pinataStatus"><span class="dot"></span><span id="pinataStatusText">Checking...</span></div>
+          <button class="logout-btn" onclick="doLogout()">Logout</button>
+        </div>
+      </div>
+    </header>
+    <div class="hero">
+      <h1>Verify <em>Integrity</em><br/>with Blockchain</h1>
+      <p>Register any file — image, document, ML model. Hash it with SHA-256, mine into a block, store on IPFS.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('register')">⬆ Register</button>
+      <button class="tab" onclick="switchTab('verify')">🔍 Verify</button>
+      <button class="tab" onclick="switchTab('retrieve')">📂 My Files</button>
+      <button class="tab" onclick="switchTab('chain')">⛓ Chain</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="panel active" id="panel-register">
+      <div class="upload-zone" id="registerZone" onclick="document.getElementById('registerInput').click()">
+        <div class="upload-icon">📁</div><h3>Drop a file to register</h3><p>Images, Documents, ML Models — anything goes</p>
+        <input type="file" id="registerInput" onchange="handleRegisterFile(this.files[0])"/>
+      </div>
+      <div class="mining-bar" id="registerMining"></div>
+      <div id="registerStatus"></div>
+    </div>
+
+    <!-- VERIFY -->
+    <div class="panel" id="panel-verify">
+      <div class="upload-zone" id="verifyZone" onclick="document.getElementById('verifyInput').click()">
+        <div class="upload-icon">🔍</div><h3>Drop a file to verify</h3><p>We'll check if this exact file exists in the blockchain</p>
+        <input type="file" id="verifyInput" onchange="handleVerifyFile(this.files[0])"/>
+      </div>
+      <div class="mining-bar" id="verifyMining"></div>
+      <div id="verifyStatus"></div>
+    </div>
+
+    <!-- MY FILES -->
+    <div class="panel" id="panel-retrieve">
+      <div class="section-header">
+        <h2>📂 My Registered Files</h2>
+        <button class="btn btn-outline btn-sm" onclick="loadMyFiles()">↺ Refresh</button>
+      </div>
+      <div class="file-grid" id="fileList"><div class="empty-state"><div class="empty-icon">⏳</div><p>Loading...</p></div></div>
+    </div>
+
+    <!-- CHAIN -->
+    <div class="panel" id="panel-chain">
+      <div class="stats">
+        <div class="stat-card"><div class="stat-label">Total Blocks</div><div class="stat-value" id="statBlocks">—</div></div>
+        <div class="stat-card"><div class="stat-label">PoW Difficulty</div><div class="stat-value">4</div></div>
+        <div class="stat-card"><div class="stat-label">IPFS CID</div><div class="stat-value" style="font-size:.66rem;font-family:var(--mono);word-break:break-all;margin-top:6px" id="statCID">—</div></div>
+      </div>
+      <div id="validityBanner"></div>
+      <div class="chain-list" id="chainList"><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Loading...</p></div>
+      <br/><button class="btn btn-outline btn-sm" onclick="loadChain()">↺ Refresh</button>
+    </div>
+  </div>
+  <footer>BlockVerify • SHA-256 + Proof-of-Work + IPFS • Built by <a href="https://github.com/subham23s" target="_blank">Subham Mishra</a> &amp; <a href="https://github.com/Anubhav-axt" target="_blank">Anubhav Pati</a></footer>
+</div>
+
+<script src="/static/js/main.js"></script>
+</body>
+</html>'
