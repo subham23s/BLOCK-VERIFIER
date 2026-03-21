@@ -63,8 +63,8 @@ blockchain_iris_project/
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/subham23s/Blockchain-Based-Machine-Learning-Model-Integrity-Verification-System.git
-cd blockchain_iris_project
+git clone https://github.com/subham23s/BLOCK-VERIFIER.git
+cd BLOCK-VERIFIER
 ```
 
 ### 2. Create virtual environment
@@ -223,4 +223,4 @@ latest_cid.txt
 
 ## License
 
-MIT License — © 2025 Subham Mishra
+MIT License — © 2025 Subham Mishra 
